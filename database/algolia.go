@@ -1,4 +1,4 @@
-package datbase
+package database
 
 import (
 	"os"
@@ -7,8 +7,8 @@ import (
 	"github.com/joho/godotenv"
 )
 
-
-func initAlgolia() (*search.Index, *search.Client) {
+//initAlgolia is a fucntion
+func InitAlgolia() (*search.Index) {
 
 	e := godotenv.Load()
 
@@ -23,6 +23,6 @@ func initAlgolia() (*search.Index, *search.Client) {
 	client := search.NewClient(YourApplicationID, YourAdminAPIKey)
 	index := client.InitIndex(your_index_name)
 
-	return index, client 
+	return index
 }
 
