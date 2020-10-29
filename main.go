@@ -1,6 +1,8 @@
 package main
 
-import "github.com/gin-gonic/gin"
+import (
+	"github.com/gin-gonic/gin"
+)
 
 func main(){
 
@@ -11,8 +13,9 @@ func main(){
 		})
 	})
 
-
-
+	r.GET("/search", func( c *gin.Context){
+		
+	})
 
 	r.Run("127.0.0.1:8080")
 
