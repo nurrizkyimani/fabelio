@@ -13,7 +13,7 @@ type Product struct {
 
 
 type ProductSeenUpdate struct  {
-	ObjectID string `json:"ObjectID"`
+	ObjectID string `json:"objectID"`
 	Seen bool`json:"Seen"`
 }
 

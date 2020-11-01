@@ -6,6 +6,7 @@ import (
 	"net/url"
 
 	"github.com/algolia/algoliasearch-client-go/v3/algolia/opt"
+	"github.com/algolia/algoliasearch-client-go/v3/algolia/search"
 	"github.com/gin-gonic/gin"
 	"github.com/nurrizkyimani/fabelio/database"
 	"github.com/nurrizkyimani/fabelio/model"
@@ -20,9 +21,18 @@ func main(){
 
 		keyword := c.Param("keyword")
 		decodedValue, err := url.QueryUnescape(keyword)
+
+
+		index.SetSettings(search.Settings{
+			AttributesForFaceting: opt.AttributesForFaceting(
+				"Seen", // or "filterOnly(brand)" for filtering purposes only
+			),
+		})
 		
 		params := []interface{} {
 			opt.AttributesToRetrieve("ProductName", "Colours"),	
+			opt.Filters("Seen:FALSE OR Seen:false"),
+
 		}
 
 		res , err := index.Search(decodedValue, params...)
@@ -52,8 +62,7 @@ func main(){
 				Seen: true,
 			}	
 
-			res1, err := index.SaveObject(newUpdate)
-
+			res1, err := index.PartialUpdateObject(newUpdate)
 
 			if err != nil {
 					fmt.Println("error:", err)
@@ -84,7 +93,16 @@ func main(){
 		})
 	})
 
-	
+
+	r.GET("/reload", func( c*gin.Context){
+
+
+		c.JSON(200, gin.H {
+			"message": "Successful Reload",
+		})
+	})
+
+
 	r.Run("127.0.0.1:8080")
 
 }
