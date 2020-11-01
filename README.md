@@ -11,7 +11,7 @@ Task details:
 - Build 1 webpage using programming language you are proficient with based on above requirements
 - Design table structure and data type based on product list provided, you can use any RDBMS or NoSQL database
 - This web page must show product name, image, price, and its specification
-- Put the source code in github, if it's private give access to glenn-pratama and at least xx of xx, xxx, xxx, xxx
+- Put the source code in github, if it's private give access to xxxx and at least xx of xx, xxx, xxx, xxx
 - Deploy it to either Heroku, AWS, Digital Ocean, or any other similar service
 - You must finish the task within 1 day from the time xxx send you the test
 - Good luck :)
