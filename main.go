@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"net/url"
 
 	"github.com/algolia/algoliasearch-client-go/v3/algolia/opt"
 	"github.com/gin-gonic/gin"
@@ -11,45 +12,30 @@ import (
 )	
 
 func main(){
-
-
 	index := database.InitAlgolia()
-
-	
-
 	fmt.Printf("print")
-	
 	r := gin.Default()
 
 	r.GET("/search/:keyword", func( c *gin.Context){
 
 		keyword := c.Param("keyword")
-
-		// _ := c.Request.Body
-
-
-		// jsonData, err := ioutil.ReadAll(c.Request.Body)
-		// if err != nil {
-		// 		// Handle error
-		// }
-
-
-
+		decodedValue, err := url.QueryUnescape(keyword)
 		
 		params := []interface{} {
 			opt.AttributesToRetrieve("ProductName", "Colours"),	
 		}
 
-		res , err := index.Search(keyword, params...)
+		res , err := index.Search(decodedValue, params...)
 		reshit := res.Hits
 
 		if err != nil {
 			panic("panic on indexing in get ")
 		}
 
-		
+		//marshaling the hits json;
 		b, err := json.Marshal(reshit)
 
+		//unmarshal the b;
 		var a[] model.Hit
 		err = json.Unmarshal(b, &a)
 
@@ -57,23 +43,37 @@ func main(){
 				fmt.Println("error:", err)
 		}
 
-		o := a[0].ObjectID
+		//if len a is not zero;
+		if len(a) != 0 {
+			o := a[0].ObjectID
 
-		newUpdate := model.ProductSeenUpdate{
-			ObjectID: o ,
-			Seen: true,
-		}	
+			newUpdate := model.ProductSeenUpdate{
+				ObjectID: o ,
+				Seen: true,
+			}	
 
-		res1, err := index.SaveObject(newUpdate)
+			res1, err := index.SaveObject(newUpdate)
 
-		if err != nil {
-				fmt.Println("error:", err)
+
+			if err != nil {
+					fmt.Println("error:", err)
+			}
+			
+			fmt.Println(res1)
 		}
-		
-		fmt.Println(res1)
-		
-		c.JSON(200, a[0] )
+		//end of if
 
+
+		//return if len zero
+		
+		if len(a) == 0 {
+			c.JSON(200, a)
+			return
+		} else {
+			//Return
+			c.JSON(200, a[0])
+			return
+		}
 	})
 
 
@@ -84,9 +84,7 @@ func main(){
 		})
 	})
 
-
-
-
+	
 	r.Run("127.0.0.1:8080")
 
 }
