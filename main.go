@@ -14,9 +14,19 @@ import (
 )	
 
 func main(){
+
 	index := database.InitAlgolia()
+	client := database.Mongoinit()
+
+	_ = client
+
 	fmt.Printf("print")
 	r := gin.Default()
+
+	r.POST("post", func ( c *gin.Context) {
+		body := c.Request.Body
+		fmt.Println(body)
+	})
 
 	r.GET("/search/:keyword", func( c *gin.Context){
 
@@ -127,7 +137,7 @@ func main(){
 		var wg sync.WaitGroup
 		wg.Add(1)
 
-		updateProduct(index, a, &wg)
+		go updateProduct(index, a, &wg)
 
 		wg.Wait()
 		
