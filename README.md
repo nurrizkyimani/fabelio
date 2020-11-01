@@ -1,3 +1,6 @@
+
+# Case in Business
+
 Budi wants to buy a Sofa 2 dudukan Vienna but it's sold out, so he decided to buy something similar with what he wanted before.
 
 You are going to help Budi to create a web page that shows 1 similar product each time he accessing the page. Whenever Budi comes back to this page he can't see the same product unless all product in list already seen by him. The sequence is from the most similar product to the least similar. Use attribute(s) in product list to decide similarity between products.
@@ -12,3 +15,40 @@ Task details:
 - Deploy it to either Heroku, AWS, Digital Ocean, or any other similar service
 - You must finish the task within 1 day from the time Fabelio send you the test
 - Good luck :)
+
+
+# REST API
+
+### Reload the `Seen` in Algolia as False 
+* Endpoint: `/reload`
+* HTTP Method: `GET`
+* Request Header:
+    * Accept: `NONE`
+    * Content-type: `NONE`
+    * Authorization: `NONE`
+  
+* Response Body:
+```json
+  [
+    {
+        "ProductName": "Sofa Java",
+        "ObjectID": "8750990000"
+    }
+  ] 
+  ```
+
+### Search with certain keyword from Algolia
+* Endpoint: `/search/:sofa%20dudukan`
+* HTTP Method: `GET`
+* Request Header:
+    * Accept: `NONE`
+    * Content-type: `NONE`
+    * Authorization: `NONE`
+  
+* Response Body:
+```json
+  {
+    "ProductName": "Sofa Java",
+    "ObjectID": "8750990000"
+  }
+  ```

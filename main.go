@@ -78,11 +78,9 @@ func main(){
 		if len(a) == 0 {
 			c.JSON(200, a)
 			return
-		} else {
-			//Return
-			c.JSON(200, a[0])
-			return
-		}
+		} 
+		
+		c.JSON(200, a[0])
 	})
 
 
@@ -92,7 +90,6 @@ func main(){
 			"message": "Hello world",
 		})
 	})
-
 
 	r.GET("/reload", func( c*gin.Context){
 
@@ -151,7 +148,6 @@ func updateProduct(index *search.Index, a []model.Hit, wg *sync.WaitGroup){
 		}	
 	
 		res1, err := index.PartialUpdateObject(newUpdate)
-
 		if err != nil {
 			panic(err)
 		}
