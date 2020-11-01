@@ -38,7 +38,7 @@ Task details:
   ```
 
 ### Search with certain keyword from Algolia
-* Endpoint: `/search/:sofa%20dudukan`
+* Endpoint: `/search/sofa%20dudukan`
 * HTTP Method: `GET`
 * Request Header:
     * Accept: `NONE`
