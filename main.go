@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/url"
+	"sync"
 
 	"github.com/algolia/algoliasearch-client-go/v3/algolia/opt"
 	"github.com/algolia/algoliasearch-client-go/v3/algolia/search"
@@ -22,13 +23,15 @@ func main(){
 		keyword := c.Param("keyword")
 		decodedValue, err := url.QueryUnescape(keyword)
 
-
+		//setting for filter
 		index.SetSettings(search.Settings{
 			AttributesForFaceting: opt.AttributesForFaceting(
 				"Seen", // or "filterOnly(brand)" for filtering purposes only
 			),
 		})
 		
+
+		//parameter of attribute that need to search;
 		params := []interface{} {
 			opt.AttributesToRetrieve("ProductName", "Colours"),	
 			opt.Filters("Seen:FALSE OR Seen:false"),
@@ -42,10 +45,8 @@ func main(){
 			panic("panic on indexing in get ")
 		}
 
-		//marshaling the hits json;
+		//marshaling the hits json; and unmarshalling;
 		b, err := json.Marshal(reshit)
-
-		//unmarshal the b;
 		var a[] model.Hit
 		err = json.Unmarshal(b, &a)
 
@@ -61,7 +62,7 @@ func main(){
 				ObjectID: o ,
 				Seen: true,
 			}	
-
+			
 			res1, err := index.PartialUpdateObject(newUpdate)
 
 			if err != nil {
@@ -71,7 +72,6 @@ func main(){
 			fmt.Println(res1)
 		}
 		//end of if
-
 
 		//return if len zero
 		
@@ -96,13 +96,71 @@ func main(){
 
 	r.GET("/reload", func( c*gin.Context){
 
-
-		c.JSON(200, gin.H {
-			"message": "Successful Reload",
+		//setting for filter
+		index.SetSettings(search.Settings{
+			AttributesForFaceting: opt.AttributesForFaceting(
+				"Seen", // or "filterOnly(brand)" for filtering purposes only
+			),
 		})
-	})
 
+
+		//parameter of attribute that need to search;
+			params := []interface{} {
+			opt.AttributesToRetrieve("ProductName", "Colours"),	
+			opt.Filters("Seen:TRUE OR Seen:true"),
+
+		}
+
+		res , err := index.Search("sofa", params...)
+		reshit := res.Hits
+
+		if err != nil {
+			panic("panic on indexing in get ")
+		}
+
+		//marshaling the hits json; and unmarshalling;
+		b, err := json.Marshal(reshit)
+		var a[] model.Hit
+		err = json.Unmarshal(b, &a)
+
+		if err != nil {
+				fmt.Println("error:", err)
+		}
+
+		var wg sync.WaitGroup
+		wg.Add(1)
+
+		updateProduct(index, a, &wg)
+
+		wg.Wait()
+		
+		c.JSON(200,a)
+	})
 
 	r.Run("127.0.0.1:8080")
 
 }
+
+
+func updateProduct(index *search.Index, a []model.Hit, wg *sync.WaitGroup){
+
+	for _, obj := range a {
+		newUpdate := model.ProductSeenUpdate{
+			ObjectID: obj.ObjectID,
+			Seen: false,
+		}	
+	
+		res1, err := index.PartialUpdateObject(newUpdate)
+
+		if err != nil {
+			panic(err)
+		}
+
+		fmt.Println(res1)
+		
+	}
+
+	wg.Done()
+}
+
+	
